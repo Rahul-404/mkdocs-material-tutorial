@@ -15,6 +15,7 @@ jobs:
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
@@ -25,5 +26,15 @@ jobs:
           path: .cache
           restore-keys: |
             mkdocs-material-
-      - run: pip install mkdocs-material 
-      - run: mkdocs gh-deploy --force
+
+      - name: Install MkDocs and Plugins
+        run: |
+          pip install mkdocs-material[imaging] mkdocstrings[python] pymdown-extensions
+
+      - name: Build MkDocs (test)
+        run: mkdocs build --strict
+
+      - name: Deploy to GitHub Pages
+        run: mkdocs gh-deploy --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
